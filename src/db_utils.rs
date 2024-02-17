@@ -29,6 +29,15 @@ pub fn print_table(conn: &Connection, table: &str) -> Result<()> {
 	Ok(())
 }
 
+pub fn print_select(conn: &Connection, sql: &str) -> Result<()> {
+	let mut stmt = conn.prepare(sql)?;
+	let rows = stmt.query([])?;
+
+	print_rows(rows)?;
+
+	Ok(())
+}
+
 pub fn print_rows(mut rows: Rows<'_>) -> Result<()> {
 	let stmt = rows.as_ref().ok_or("no statements")?;
 	let names: Vec<String> = stmt.column_names().into_iter().map(|s| s.to_string()).collect();

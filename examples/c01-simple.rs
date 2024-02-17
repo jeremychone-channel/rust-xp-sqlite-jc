@@ -1,5 +1,5 @@
 use rusqlite::Connection;
-use xp_sqlite::db_utils::{create_schema, print_rows};
+use xp_sqlite::db_utils::{create_schema, print_rows, print_select};
 use xp_sqlite::Result;
 
 fn main() -> Result<()> {
@@ -31,6 +31,9 @@ fn main() -> Result<()> {
 	let rows = stmt.query(&[(":lvl", &12)])?;
 	println!("\n=== query (print_rows)\n");
 	print_rows(rows)?;
+
+	// -- Print version
+	print_select(&conn, "SELECT sqlite_version()")?;
 
 	Ok(())
 }

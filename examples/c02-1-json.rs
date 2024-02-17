@@ -27,10 +27,11 @@ fn main() -> Result<()> {
 						json_set(data_t, 
 							'$.prop_num', ?2, 
 							'$.prop_obj.name', ?3, 
-							'$.prop_obj.is_big', json(?4)
+							'$.prop_obj.is_big', json(?4),
+							'$.new_prop_ob.another.name', ?5
 						) 
 						WHERE id = ?1"#,
-		(&id, &222, &"Obj 01 Updated", &"true"),
+		(&id, &222, &"Obj 01 Updated", &"true", &"another name"),
 	)?;
 
 	print_table(&conn, "agent")?;
