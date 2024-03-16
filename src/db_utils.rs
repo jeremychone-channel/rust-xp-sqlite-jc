@@ -40,7 +40,7 @@ pub fn print_select(conn: &Connection, sql: &str) -> Result<()> {
 
 pub fn print_rows(mut rows: Rows<'_>) -> Result<()> {
 	let stmt = rows.as_ref().ok_or("no statements")?;
-	let names: Vec<String> = stmt.column_names().into_iter().map(|s| s.to_string()).collect();
+	let names: Vec<String> = stmt.column_names().into_iter().map(String::from).collect();
 
 	let mut table_builder = Builder::new();
 	table_builder.push_record(names.clone());
