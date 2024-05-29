@@ -27,7 +27,7 @@ fn main() -> Result<()> {
 	// conn.execute("INSERT INTO agent (name, level) VALUES (?1, ?2)", ("b", "no-a-number"))?;
 
 	// -- Simple query and print
-	let mut stmt = conn.prepare("SELECT * FROM agent WHERE level > :lvl")?;
+	let mut stmt = conn.prepare("SELECT agent.id, agent.name FROM agent WHERE level > :lvl")?;
 	let rows = stmt.query(&[(":lvl", &12)])?;
 	println!("\n=== query (print_rows)\n");
 	print_rows(rows)?;

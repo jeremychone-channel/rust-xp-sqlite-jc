@@ -11,11 +11,21 @@ pub fn create_schema(conn: &Connection) -> Result<()> {
             name    TEXT,
 						model   TEXT,
 						level   INTEGER,
+						module_id INTEGER,
 						data_t  TEXT,
             data_b  BLOB
         ) STRICT",
 		(), // empty list of parameters.
 	)?;
+
+	conn.execute(
+		"CREATE TABLE IF NOT EXISTS module (
+            id      INTEGER PRIMARY KEY AUTOINCREMENT,
+            name    TEXT
+        ) STRICT",
+		(), // empty list of parameters.
+	)?;
+
 	Ok(())
 }
 
@@ -48,6 +58,7 @@ pub fn print_rows(mut rows: Rows<'_>) -> Result<()> {
 	while let Some(row) = rows.next()? {
 		// -- Extract row cells
 		let mut row_cells: Vec<String> = Vec::new();
+
 		for (i, _k) in names.iter().enumerate() {
 			// Extract cell as string
 			let v = row.get_ref(i)?;
