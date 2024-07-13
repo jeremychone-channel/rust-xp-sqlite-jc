@@ -1,4 +1,5 @@
-use rusqlite::Connection;
+use rusqlite::types::Value;
+use rusqlite::{Connection, ToSql};
 use xp_sqlite::db_utils::{create_schema, print_rows, print_select};
 use xp_sqlite::Result;
 
@@ -22,9 +23,16 @@ fn main() -> Result<()> {
 	// OK in `strict` mode
 	conn.execute("INSERT INTO agent (name, level) VALUES (?1, ?2)", (&123, &2000))?;
 
-	// -- Insert `string` in `number` column
-	// NOTE: FAIL with `STRICT`
-	// conn.execute("INSERT INTO agent (name, level) VALUES (?1, ?2)", ("b", "no-a-number"))?;
+	// -- Example of dynamic column/values (from owned values, null as example)
+	let null = Value::Null; // ok to just be a ref below
+	let data: &[(&str, &Value)] = &[("model", &null)];
+	let (cols, vals): (Vec<&str>, Vec<&Value>) = data.iter().cloned().unzip();
+	let sql = format!(
+		"UPDATE agent SET {}",
+		cols.iter().map(|col| format!("\"{}\" = ?", col)).collect::<Vec<_>>().join(", ")
+	);
+	let dyn_vals: Vec<&dyn ToSql> = vals.iter().map(|x| x as &dyn ToSql).collect();
+	conn.execute(&sql, &*dyn_vals)?;
 
 	// -- Simple query and print
 	let mut stmt = conn.prepare("SELECT agent.id, agent.name, agent.model FROM agent WHERE level > :lvl")?;
