@@ -1,13 +1,13 @@
 use modql::field::{Fields, SeaFieldValue};
-use modql::{FromSqliteRow, FromSqliteValue};
+use modql::{SqliteFromRow, SqliteFromValue};
 
-#[derive(Debug, SeaFieldValue, FromSqliteValue)]
+#[derive(Debug, SeaFieldValue, SqliteFromValue)]
 pub enum Model {
 	Gpt3,
 	Gpt4,
 }
 
-#[derive(Debug, Fields, FromSqliteRow)]
+#[derive(Debug, Fields, SqliteFromRow)]
 pub struct Agent {
 	pub id: i32,
 	pub name: String,

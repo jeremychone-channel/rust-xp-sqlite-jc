@@ -1,11 +1,11 @@
 use modql::field::HasSeaFields;
-use modql::FromSqliteRow as _;
+use modql::SqliteFromRow;
 use rusqlite::Connection;
 use sea_query::{Iden, IntoIden, Order, Query, SqliteQueryBuilder};
 use sea_query_rusqlite::RusqliteBinder;
 use serde_json::json;
 use xp_sqlite::db_utils::create_schema;
-use xp_sqlite::model_05::{Agent, AgentForCreate};
+use xp_sqlite::model_06::{Agent, AgentForCreate};
 use xp_sqlite::Result;
 
 #[derive(Iden)]
@@ -56,7 +56,7 @@ fn main() -> Result<()> {
 
 	println!("Select statement: {sql}");
 	let mut stmt = conn.prepare(&sql)?;
-	let iter = stmt.query_and_then(&*values.as_params(), Agent::from_sqlite_row)?;
+	let iter = stmt.query_and_then(&*values.as_params(), Agent::sqlite_from_row)?;
 
 	println!("\nResult:\n");
 	for agent in iter {

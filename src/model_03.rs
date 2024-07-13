@@ -3,7 +3,7 @@ use rusqlite::{Row, ToSql};
 
 #[derive(Debug, strum::AsRefStr, strum::EnumString)]
 pub enum Model {
-	Gpt3,
+	  Gpt3,
 	Gpt4,
 }
 
