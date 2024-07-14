@@ -2,7 +2,7 @@ use rusqlite::Connection;
 use sea_query::{Iden, IntoIden, Order, Query, SimpleExpr, SqliteQueryBuilder};
 use sea_query_rusqlite::RusqliteBinder;
 use serde_json::json;
-use xp_sqlite::db_utils::create_schema;
+use xp_sqlite::db_utils::{create_schema, print_table};
 use xp_sqlite::model_03::{Agent, AgentForCreate};
 use xp_sqlite::Result;
 
@@ -36,8 +36,17 @@ fn main() -> Result<()> {
 			..Default::default()
 		};
 
-		let columns = vec![AgentIden::Name.into_iden(), AgentIden::DataT.into_iden()];
-		let values = vec![SimpleExpr::Value(agent.name.into()), SimpleExpr::Value(agent.data_t.into())];
+		let columns = vec![
+			AgentIden::Name.into_iden(),
+			AgentIden::Model.into_iden(),
+			AgentIden::DataT.into_iden(),
+		];
+		let values = vec![
+			SimpleExpr::Value(agent.name.into()),
+			SimpleExpr::Value("gpt4".into()), // SimpleExpr::Value(sea_query::odeValue::String(None)), // will set null (does not have to be same type)
+			SimpleExpr::Value(agent.data_t.into()),
+		];
+		println!("->> {columns:?}");
 
 		let mut query = Query::insert();
 		let query = query.into_table(AgentIden::Table).columns(columns).values(values)?;
@@ -45,6 +54,10 @@ fn main() -> Result<()> {
 
 		conn.execute(&sql, &*values.as_params())?;
 	}
+
+	print_table(&conn, "agent")?;
+
+	// -- Do the selects
 
 	let columns = vec![
 		AgentIden::Id.into_iden(),
@@ -70,7 +83,7 @@ fn main() -> Result<()> {
 
 	println!("\nResult:\n");
 	for agent in agent_iter {
-		println!("{:?}", agent.unwrap());
+		println!("{:?}", agent);
 	}
 	Ok(())
 }
