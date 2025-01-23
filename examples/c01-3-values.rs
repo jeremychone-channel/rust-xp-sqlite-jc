@@ -25,12 +25,10 @@ fn main() -> Result<()> {
 
 	// -- Example of dynamic column/values (from owned values, null as example)
 	let null = Value::Null; // ok to just be a ref below
-	let data: &[(&str, &Value)] = &[("model", &null)];
-	let (cols, vals): (Vec<&str>, Vec<&Value>) = data.iter().cloned().unzip();
-	let sql = format!(
-		"UPDATE agent SET {}",
-		cols.iter().map(|col| format!("\"{}\" = ?", col)).collect::<Vec<_>>().join(", ")
-	);
+	let data: Vec<(String, Value)> = vec![("model".to_string(), null)];
+	let (cols, vals): (Vec<String>, Vec<Value>) = data.iter().cloned().unzip();
+	let cols_joined = cols.iter().map(|col| format!("\"{}\" = ?", col)).collect::<Vec<_>>().join(", ");
+	let sql = format!("UPDATE agent SET {cols_joined}",);
 	let dyn_vals: Vec<&dyn ToSql> = vals.iter().map(|x| x as &dyn ToSql).collect();
 	conn.execute(&sql, &*dyn_vals)?;
 
